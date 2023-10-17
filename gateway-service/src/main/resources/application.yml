@@ -1,0 +1,71 @@
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: gateway-server
+  jackson:
+    default-property-inclusion: NON_NULL
+  output:
+    ansi:
+      enabled: always
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: openapi
+          uri: http://localhost:${server.port}
+          predicates:
+            - Path=/v3/api-docs/**
+          filters:
+            - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedHeaders: "*"
+            allowedMethods: "*"
+      httpclient:
+        ssl:
+          useInsecureTrustManager: true
+
+server:
+  port: 8081
+#  ssl:
+#    key-store-type: PKCS12
+#    key-store: classpath:keystore/keystore.p12.${APP_ENV:dev}
+#    key-store-password: travel
+#    key-alias: tomcat
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_ZONE_URL:http://192.168.8.46:8761/eureka}
+    registry-fetch-interval-seconds: 5
+    register-with-eureka: true
+    fetch-registry: true
+
+#secret key - should be encrypted
+jwt:
+  secret: ${JWT_SECRET:secretkey}
+  expiration: ${JWT_EXPIRATION:1440}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: auth
+        url: /v3/api-docs/auth
+      - name: priceline
+        url: /v3/api-docs/priceline

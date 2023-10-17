@@ -1,0 +1,57 @@
+server:
+  port: 8200
+  servlet:
+    context-path: /priceline
+
+spring:
+  application:
+    name: priceline-service
+  datasource:
+    platform: postgres
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/cuckoofi-travel-dev}
+    username: ${DATASOURCE_USERNAME:postgres}
+    password: ${DATASOURCE_PASSWORD:postgres}
+    driverClassName: org.postgresql.Driver
+  jpa:
+    database: POSTGRESQL
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  devtools:
+    restart:
+      enabled: true
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_ZONE_URL:http://192.168.8.46:8761/eureka}
+    registry-fetch-interval-seconds: 5
+    register-with-eureka: true
+    fetch-registry: true
+
+# JWT & Cookie Properties
+jwt:
+  secret: ${JWT_SECRET:secretkey}
+  expiration: ${JWT_EXPIRATION:1440}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+springdoc:
+  packagesToScan: com.cuckoofi.pricelineservice
+
+priceline:
+  service:
+    api-key: c9c6b614f801ac717988a03911e0bab2
+    ref-id: 10320
+    base-url: ${PRICE_LINE_BASE_URL:https://api-sandbox.rezserver.com}
